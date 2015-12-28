@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/tx/spring-context-3.0.xsd"
+			 default-lazy-init="false">
+			 
+	<!-- 资讯 -->
+	<bean id="baseDWGAInfoExportService" class="com.myhexin.daq.core.service.BaseExportService" parent="baseInfosExportService">
+		<property name="ds" ref="dataSourceDWGA"/>
+	</bean>	
+	<!-- 新股上市 -->
+
+	
+	<!-- <bean id="newStockInputServiceImpl" class="com.myhexin.daq.info.service.impl.NewStockInputServiceImpl">
+		<property name="newStockDBOPService" ref="newStockDBOPServiceByHibImpl"/>
+		<property name="acquisitionStrategy" ref="infoIncrementalStrategyImpl"/>
+	</bean>
+	<bean id="newStockDynaBeanResultSetHandler" class="com.streamer.commons.jdbc.DynaBeanResultSetHandler" >
+		<property name="inputService" ref="newStockInputServiceImpl"/>
+	</bean>
+	<bean id="baseNewStockExportService" class="com.myhexin.daq.core.service.BaseExportService" parent="baseExportServiceImpl">
+		<property name="resultSetHandler" ref="newStockDynaBeanResultSetHandler"/>
+	</bean> -->
+	
+	<bean id="baseDWGANewStockExportService" class="com.myhexin.daq.core.service.BaseExportService" parent="baseNewStockExportService">
+		<property name="ds" ref="dataSourceDWGA"/>
+	</bean><!-- 新股上市-->
+	<!-- 新股上市   FORMID: 1174-->
+		<bean id="dwgaxgss_yjbdInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGANewStockExportService">
+		<property name="sqlStatementsTemplete" value="SELECT
+		
+		CONVERT(VARCHAR,'gazx_xgss') as mapkey,
+    GPDM as code,
+	 CONVERT(VARCHAR,A.WSFXRQ, 112) as rdate,
+    GPJC as name ,
+	 CONVERT(VARCHAR,WSFXRQ, 112) as onlinestart,
+	  CONVERT(VARCHAR,WSFXRQ, 112) as issuestart,
+	 CONVERT(VARCHAR,SSRQ, 112) as listdate,
+	SGDM as purchasecode,
+	FXmz as parvalue,
+	FXJG as issueprice,
+	FxSL as issuevol,
+	WSFXZQL as lotwinrate ,
+	CONVERT(VARCHAR,ZQHGBR, 112) as lotwincodedate ,
+	ZQH as lotewincode,
+	Qmtbfxsyl as earnings,
+	sgsx*1.0/10000 as  purchaselimit,
+	CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME,
+	CONVERT(VARCHAR,GETDATE(), 120)  AS CREATETIME, 
+	CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+	ZCXS as LEADUNDERWRITER,
+			CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+		 	from XGFXYSS A WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_xgss"/>
+	</bean>
+	
+
+	<!-- 每日新闻开始 -->
+	
+	
+		<!--公告速递_公司公告 -->
+	<bean id="dwgaGssdInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_gsgg') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GAXB AS LABEL, A.GJZ AS KEYWORD, A.GGBH AS REMARK,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.GPDM AS CODE
+			FROM GSGG A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ  "
+			/>
+		<property name="incrementalName" value="gazx_gsgg"/>
+	</bean>
+
+			<!--_时事要闻 对应首页中得    -->
+	<bean id="dwgassyw_yjbdInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_ssyw') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GJZ AS KEYWORD, 
+			A.CC AS SOURCE, A.ZZ AS AUTHOR, A.MTLY AS MEDIASOURCE, A.ZYXDJ AS SIGN, 
+		 	CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, 
+		 	CONVERT(VARCHAR,A.ZHXGRQ, 120)AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, 
+			 CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM SSYW A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ 
+		"
+			/>
+		<property name="incrementalName" value="gazx_ssyw"/>
+	</bean>
+	        
+	
+	
+	<!--财经导读_赢家必读 -->
+	<bean id="dwgaCjdd_yjbdInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_cjdd') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GJZ AS KEYWORD, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.MTLY AS MEDIASOURCE, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.YJBD AS LABEL
+			FROM YJBD A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_cjdd"/>
+	</bean>
+	<!--国内财经 -->
+	<bean id="dwgaGncjInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_gncj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GJZ AS KEYWORD, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.MTLY AS MEDIASOURCE, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM GNCJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_gncj"/>
+	</bean>
+	<!--国际财经 -->
+	<bean id="dwgaGjcjInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_gjcj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM GJCJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_gjcj"/>
+	</bean>
+	<!--行业新闻_行业动态 -->
+	<bean id="dwgaHyxw_hydtInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_hyxw') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+				CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+				CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.HYLB AS LABEL
+			FROM HYDT A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_hyxw"/>
+	</bean>
+	<!--专题评论_专题研究 -->
+	<bean id="dwgaZtpl_ztyjInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_ztpl') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ZTZMC AS LABEL
+			FROM ZTYJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_ztpl"/>
+	</bean>
+	<!--今日提示_特别提示-交易公告 -->
+	<bean id="dwgaJrts_tbtsInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_jrts') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, 	CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+				CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, 	CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM TBTS A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_jrts"/>
+	</bean>
+	
+																	<!-- 每日新闻结束 -->
+		
+		
+																	<!-- 股票专栏开始 -->
+	<!--市场观察_证券市场相关要闻   财经要闻 -->
+	<bean id="dwgaScgc_zqscxgywInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_scgc') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.DSJBZ AS LABEL
+			FROM ZQSCXGYW A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_scgc"/>
+	</bean>
+	<!--宏观研究_宏观经济研究 -->
+	<bean id="dwgaHgyj_hgjjyjInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_hgyj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM HGJJYJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_hgyj"/>
+	</bean>
+	<!--行业研究 -->
+	<bean id="dwgaHyyjInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_hyyj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.HYLB AS LABEL
+			FROM HYYJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_hyyj"/>
+	</bean>
+	<!--研究参考_公司研究 -->
+	<bean id="dwgaYjckInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_yjck') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.ABG AS REMARK,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.GPDM AS CODE
+			FROM GSYJ A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_yjck"/>
+	</bean>
+
+	<!--市场统计_统计资料 -->
+	<bean id="dwgaSctj_tjzlInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_sctj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.CC AS GPDM, A.GJZ AS KEYWORD, A.ABG AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.TJZL AS LABEL
+			FROM TJZL A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_sctj"/>
+	</bean>
+	
+	<!--公告速递  -->
+     <bean id="dwgaGgsdInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_ggsd') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GPDM AS GPDM, A.GAXB AS KEYWORD, A.ZXWRLB AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.GKBZ AS CZY
+		    FROM GSGG A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_ggsd"/>
+	</bean>
+
+																	<!-- 股票专栏结束  -->
+																	
+																		<!-- 权证专栏开始 -->			
+																	
+	<!--权证研究_板块分析 -->
+	<bean id="dwgaQzyj_bkfxInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_qzyj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.BKLB AS LABEL,A.HYLB AS INDUSTRY
+			FROM BKFX A 
+			WHERE A.BKLB='权证板块' AND  CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_qzyj"/>
+	</bean>
+	<!--权证动态_基础知识 -->
+	<bean id="dwgaQzzs_jczsInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_qzdt') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.ZQZS AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ABG AS REMARK
+			FROM JCZS A 
+			WHERE A.ZQZS='权证' AND CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_qzdt"/>
+	</bean>
+																		<!-- 权证专栏 结束-->
+																		<!-- 基金专栏开始 -->		
+	
+	<!--基金动态_基金动态与点评 -->
+	<bean id="dwgaJjdt_jjdtydpInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_jjdt') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.XXLX AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.JJDM AS CODE
+			FROM JJDTYDP A 
+			WHERE A.XXLX='基金动态' AND CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_jjdt"/><!-- JJDTYDP表不存在 -->
+	</bean>
+	<!--基金分析_基金经营情况评述 -->
+	<bean id="dwgaJjfx_jjjyqkpsInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_jjfx') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.YWLX AS REMARK, CONVERT(VARCHAR,A.JZRQ, 120) AS EXPIREDTIME,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.JJDM AS CODE
+			FROM JJJYQKPS A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_jjfx"/>
+	</bean>
+	<!--基金研究_基金动态与点评 -->
+	<bean id="dwgaJjyj_jjdtydpInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_jjyj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.XXLX AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120)  AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.JJDM AS CODE
+			FROM JJDTYDP A 
+			WHERE A.XXLX!='基金动态' AND CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_jjyj"/><!-- JJDTYDP表不存在 -->
+	</bean>
+	<!--基金公告 -->
+	<bean id="dwgaJjggInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_jjgg') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GJZ AS KEYWORD, A.JJGGLB AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.JJDM AS CODE
+			FROM JJQTGG A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_jjgg"/>
+	</bean>
+	
+	
+															<!-- 基金专栏结束 -->		
+															 <!-- 三板开始 -->		
+	<!--三板新闻/公司评论_三板市场 -->
+	<bean id="dwgaSbxw_sbscInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_sbxw') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS lASTGUID
+			FROM SBSC A WHERE A.xxlx='三板动态' AND
+			 CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_sbxw"/>
+	</bean>
+	
+	
+		<!--三板/公司评论_三板市场 -->
+	<bean id="dwgaSbpl_sbscInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_gspl') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID
+			FROM SBSC A WHERE A.xxlx='三板评述' AND
+			 CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_gspl"/>
+	</bean>
+	                                                             <!-- 三板结束 -->
+
+
+														 <!-- 个股开始 -->	
+	<!--个股点评 -->
+	<bean id="dwgaGgdpInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_ggdp') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.ABG AS REMARK,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.GPDM AS CODE, A.DPLX AS LABEL
+			FROM GGDP A 
+			WHERE (A.ABG='B股' OR A.ABG='AB股') AND  CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_ggdp"/>
+	</bean>
+	<!--B股知识_基础知识 -->
+	<bean id="dwgaBgzs_jczsInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_bgdt') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, A.ZQZS AS LABEL,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ABG AS REMARK
+			FROM JCZS A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' AND (A.ABG='B股' OR A.ABG='AB股') order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_bgdt"/>
+	</bean>
+											
+	<!--债券动态_债券动态与点评-->
+	<bean id="dwgaZqdt_zqdtydpInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_zqgg') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN,
+			CONVERT(VARCHAR,A.fsrq, 120)  AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ZQDM AS CODE, A.XXLX AS LABEL, A.HGBZ AS REMARK
+			FROM ZQDTYDP A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' AND (A.xxlx='债券动态' or A.xxlx='国债动态') order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_zqgg"/><!-- 老版本中没有     公告 -->
+	</bean>
+	<!--债券研究_债券动态与点评--><!-- 研究 -->
+	<bean id="dwgaZqyj_zqdtydpInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_zqyj') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ZQDM AS CODE, A.XXLX AS LABEL, A.HGBZ AS REMARK
+			FROM ZQDTYDP A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' AND (A.xxlx!='债券动态' or A.xxlx!='国债动态') order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_zqyj"/>
+	</bean>
+	<!--债券公告-->
+	<bean id="dwgaZqggInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_zqgg') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.GJZ AS KEYWORD,
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.ZQDM AS CODE, A.GGLX AS LABEL, A.ZQLX AS REMARK
+			FROM ZQGG A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_zqgg"/>
+	</bean>
+	<!-- 法律法规 -->
+	<bean id="dwgaFlfgInfoAcq" class="com.myhexin.daq.core.service.BaseExportService" parent="baseDWGAInfoExportService">
+		<property name="sqlStatementsTemplete" value="SELECT CONVERT(VARCHAR,'gazx_flfg') AS MAPKEY, A.ZT AS TITLE, A.NR AS CONTENT,
+			A.MTLY AS MEDIASOURCE, A.CC AS SOURCE, A.ZZ AS AUTHOR, A.GJZ AS KEYWORD, A.ZYXDJ AS SIGN, 
+			CONVERT(VARCHAR,A.fsrq, 120) AS CREATETIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS UPDATETIME,
+			CONVERT(VARCHAR,GETDATE(), 120) AS INPUTTIME, CONVERT(VARCHAR,A.ZHXGRQ, 120) AS LASTGUID, A.FLFG AS LABEL
+			FROM FLFG A 
+			WHERE CONVERT(VARCHAR,A.ZHXGRQ, 120) > '{}' order by A.ZHXGRQ "
+			/>
+		<property name="incrementalName" value="gazx_flfg"/><!-- 老版本中没有 -->
+	</bean>
+	
+	<bean id="dwgaTaskList" class="com.myhexin.daq.core.task.TaskImpl">
+		<property name="taskList">
+			<list>
+               <ref bean="dwgaZqggInfoAcq"/><!--债券公告 -->
+                <ref bean="dwgaZqyj_zqdtydpInfoAcq"/><!--债券研究_债券动态与点评--><!-- 研究 -->
+                <ref bean="dwgaZqdt_zqdtydpInfoAcq"/><!--债券动态_债券动态与点评-->
+                <ref bean="dwgaBgzs_jczsInfoAcq"/><!--B股知识_基础知识 -->
+                <ref bean="dwgaGgdpInfoAcq"/><!--个股点评 -->
+                
+                <!-- 三板开始 -->
+                <ref bean="dwgaSbpl_sbscInfoAcq"/><!--三板/公司评论_三板市场 -->
+                <ref bean="dwgaSbxw_sbscInfoAcq"/><!--三板/新闻_三板市场 -->
+                
+                <!-- 基金专栏开始 --> 
+                <ref bean="dwgaJjggInfoAcq"/><!--基金公告 -->
+                <ref bean="dwgaJjyj_jjdtydpInfoAcq"/><!--基金研究_基金动态与点评 -->
+                <ref bean="dwgaJjfx_jjjyqkpsInfoAcq"/><!--基金分析_基金经营情况评述 -->
+                <ref bean="dwgaJjdt_jjdtydpInfoAcq"/><!--基金动态_基金动态与点评 -->
+                
+                <!-- 权证专栏开始 -->
+                <ref bean="dwgaQzzs_jczsInfoAcq"/><!--权证动态_基础知识 -->
+                <ref bean="dwgaQzyj_bkfxInfoAcq"/><!--权证研究_板块分析 -->
+                
+                <!-- 股票专栏 -->
+                <ref bean="dwgaGgsdInfoAcq"/><!--公告速递  -->
+                <ref bean="dwgaSctj_tjzlInfoAcq"/><!--市场统计_统计资料 -->
+                <ref bean="dwgaYjckInfoAcq"/><!--研究参考_公司研究 -->
+                <ref bean="dwgaHyyjInfoAcq"/><!--行业研究 -->
+                <ref bean="dwgaHgyj_hgjjyjInfoAcq"/><!--宏观研究_宏观经济研究 -->
+                <!--<ref bean="dwgaScgc_zqscxgywInfoAcq"/>--><!--市场观察_证券市场相关要闻   财经要闻 (重要) -->
+                
+                <!-- 每日新闻 -->
+                <!--<ref bean="dwgaJrts_tbtsInfoAcq"/>--><!--今日提示_特别提示-交易公告 (重要)-->
+                <ref bean="dwgaZtpl_ztyjInfoAcq"/><!--专题评论_专题研究 -->
+                <ref bean="dwgaHyxw_hydtInfoAcq"/><!--行业新闻_行业动态 -->
+                <ref bean="dwgaGjcjInfoAcq"/><!--国际财经 -->
+                <ref bean="dwgaGncjInfoAcq"/><!--国内财经 -->
+                <ref bean="dwgaCjdd_yjbdInfoAcq"/><!--财经导读_赢家必读 -->
+
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="dwgaTask" class="com.myhexin.daq.core.aop.AcqInvokerProxyFactory">
+		<property name="invokeObject" ref="dwgaTaskList"/>
+	</bean>
+	
+</beans>
