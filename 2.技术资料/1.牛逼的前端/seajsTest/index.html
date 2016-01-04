@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>seajs</title>
+</head>
+<body>
+
+	<script src="sea.js"></script>
+	<script type="text/javascript">
+
+		var obj = [{'money':10,'age':'21','name':'zhangzhang'},
+		           {'money':2,'age':'20','name':'zhaochao'},
+		           {'money':134,'age':'26','name':'zhangxiang'},
+		           {'money':121,'age':'12','name':'chenbo'}
+		          ]
+	</script>
+	<script type="text/javascript">
+		seajs.config({
+			alias:{
+				"jquery":'jquery'
+			}
+		})
+	    seajs.use("sortbykey.js")
+	</script>
+</body>
+</html>

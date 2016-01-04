@@ -1,0 +1,9 @@
+1 IE6 不支持tr:hover li:hover
+
+2 IE  不支持display:table  
+      .father{positon:relative;width: ;height:;}	
+        .child{_postion:absolute;_top:50%}
+        .content{_positon:reative;_top:-50%}
+
+
+

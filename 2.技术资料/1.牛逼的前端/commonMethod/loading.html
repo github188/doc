@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+
+			.background { 
+			display: block; 
+			width: 100%; 
+			height: 100%; 
+			opacity: 0.4; 
+			position: absolute; 
+			top: 0; 
+			left: 0; 
+			z-index: 2000; 
+			} 
+			.progressBar { 
+			border: solid 2px #86A5AD; 
+			background: white url(loading.gif) no-repeat 10px 10px; 
+			} 
+			.progressBar { 
+				font-size: 12px;
+			display: block; 
+			width: 148px; 
+			height: 28px; 
+			position: fixed; 
+			top: 50%; 
+			left: 50%; 
+			margin-left: -74px; 
+			margin-top: -14px; 
+			padding: 10px 10px 10px 50px; 
+			text-align: left; 
+			line-height: 27px; 
+			font-weight: bold; 
+			position: absolute; 
+			z-index: 2001; 
+			} 
+
+	</style>
+</head>
+<body>
+	<div id="background" class="background" style="display: none; "></div> 
+	<div id="progressBar" class="progressBar" style="display: none; ">数据加载中，请稍等...</div>
+	<script type="text/javascript" src="jquery-2.1.3.js"></script> 
+	<script type="text/javascript">
+
+
+		window.onload = haha;
+        function haha(){
+        	console.log('zhangxiang');
+        }
+
+        if(document.addEventListener){
+            document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
+        }
+        function DOMContentLoaded(){
+        	$('.background,.progressBar').show();
+        }
+	</script>
+</body>
+</html>
